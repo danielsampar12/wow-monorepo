@@ -1,0 +1,55 @@
+import { Router } from 'express';
+
+import { tagsRouter } from './tags.routes';
+import { authRouter } from './auth.routes';
+import { usersRouter } from './users.routes';
+import { ownerRouter } from './owners.routes';
+import { placesRouter } from './places.routes';
+import { eventsRouter } from './events.routes';
+import { searchRouter } from './search.routes';
+import { authorsRouter } from './authors.routes';
+import { articlesRouter } from './articles.routes';
+import { childrenRouter } from './children.routes';
+import { ageGroupsRouter } from './ageGroups.routes';
+import { categoriesRouter } from './categories.routes';
+import { termsOfUseRouter } from './termsOfUse.routes';
+import { eventImagesRouter } from './eventImages.routes';
+import { placeDetailsRouter } from './placeDetails.routes';
+import { announcementsRouter } from './announcements.routes';
+import { privacyPolicyRouter } from './privacyPolicy.routes';
+import { eventsSchedulesRouter } from './eventSchedules.routes';
+import { placeSuggestionRouter } from './placeSuggetions.routes';
+import { eventsUsersRatingsRouter } from './eventsUsersRatings.routes';
+import { placesUsersRatingsRouter } from './placesUsersRatings.routes';
+import { passwordRecoveryTokenRouter } from './passwordRecoveryToken.routes';
+import { announcementSuggestionsRouter } from './announcementSuggestions.routes';
+import { versionUpdateControlRouter } from './versionUpdateControl.routes';
+
+const routes = Router();
+
+routes.use('/tags', tagsRouter);
+routes.use('/auth', authRouter);
+routes.use('/users', usersRouter);
+routes.use('/owners', ownerRouter);
+routes.use('/places', placesRouter);
+routes.use('/events', eventsRouter);
+routes.use('/search', searchRouter);
+routes.use('/authors', authorsRouter);
+routes.use('/articles', articlesRouter);
+routes.use('/children', childrenRouter);
+routes.use('/ageGroups', ageGroupsRouter);
+routes.use('/categories', categoriesRouter);
+routes.use('/eventImages', eventImagesRouter);
+routes.use('/terms-of-use', termsOfUseRouter);
+routes.use('/placeDetails', placeDetailsRouter);
+routes.use('/announcements', announcementsRouter);
+routes.use('/privacy-policy', privacyPolicyRouter);
+routes.use('/eventSchedules', eventsSchedulesRouter);
+routes.use('/placeSuggestions', placeSuggestionRouter);
+routes.use('/eventsUsersRatings', eventsUsersRatingsRouter);
+routes.use('/placesUsersRatings', placesUsersRatingsRouter);
+routes.use('/version-update-control', versionUpdateControlRouter);
+routes.use('/passwordRecoveryTokens', passwordRecoveryTokenRouter);
+routes.use('/announcementSuggestions', announcementSuggestionsRouter);
+
+export { routes };

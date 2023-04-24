@@ -1,0 +1,18 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "WOW's API",
+    "description": "WOW API",
+    "termsOfService": "https://imagedelivery.net/Ii6xN7qVsY7lOet13HpI1w/c09d90a1-f8e4-45ba-f3b6-af0cbebc6000/public",
+    "contact": {
+      "email": "daniel.sampar@mouts.info"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333",
+      "description": "Development server."
+    }
+  ]
+}

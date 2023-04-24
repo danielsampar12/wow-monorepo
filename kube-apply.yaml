@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    msweep.service: wow-backend
+  name: wow-backend
+  namespace: 'ENV_NAMESPACE'
+spec:
+  progressDeadlineSeconds: 2147483647
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      msweep.service: wow-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        msweep.service: wow-backend
+    spec:
+      containers:
+      - name: wow-backend
+        image: 'ENV_IMAGE'
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                key: DATABASE_URL
+                name: wow-db
+          - name: CLOUD_FLARE_URL
+            valueFrom:
+              secretKeyRef:
+                key: CLOUD_FLARE_URL
+                name: wow-cf
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: JWT_SECRET
+                name: wow-jwt-secret
+          - name: AZURE_COMMUNICATION_SERVICES_CONNECTION_STRING
+            valueFrom:
+              secretKeyRef:
+                name: wow-email-string
+                key: AZURE_COMMUNICATION_SERVICES_CONNECTION_STRING
+          - name: APP_EMAIL_SENDER
+            value: no-reply@wowtime.com.br
+        ports:
+        - containerPort: 3333
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: cr-wow-secret
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status: {}

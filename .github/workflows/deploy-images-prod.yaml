@@ -1,0 +1,44 @@
+name: Docker Image CI - Production
+
+on: 
+  pull_request_target:
+    types: [closed]
+    branches: 
+     - prod
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.0.0
+
+    - uses: actions/checkout@v2.0.0
+      with:
+        token: '${{ secrets.ENV_GITHUB_TOKEN }}'
+        repository: 'moutsIT/wow-server'
+        
+    - name: Docker Login
+      uses: docker/login-action@v1.12.0
+      with:
+        registry: crwowprod.azurecr.io
+        username: crwowprod
+        password: ${{ secrets.ENV_REGISTRY_PASS_PROD }}
+    
+    - name: Kubernetes Login
+      uses: azure/k8s-set-context@v2
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.ENV_KUBECONFIG_PROD }}
+        
+    - name: Build the Docker image
+      run: |
+        docker build . --tag crwowprod.azurecr.io/wow-backend:${{ github.sha }}
+        docker push crwowprod.azurecr.io/wow-backend:${{ github.sha }}
+        sed -i "s|'ENV_SYSTEM'|prod|g" kube-apply.yaml
+        sed -i "s|'ENV_IMAGE'|crwowprod.azurecr.io/wow-backend:${{ github.sha }}|g" kube-apply.yaml
+        sed -i "s|'ENV_HOST'|app.wowtime.com.br|g" kube-apply.yaml
+        sed -i "s|'ENV_NAMESPACE'|wow-prod|g" kube-apply.yaml
+        kubectl apply -f kube-apply.yaml

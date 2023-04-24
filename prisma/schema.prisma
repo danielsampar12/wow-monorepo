@@ -1,0 +1,851 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+
+  previewFeatures = ["extendedIndexes", "improvedQueryRaw"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LoginProvider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+  APPLE
+}
+
+enum Genre {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  uuid                 String        @id @default(uuid())
+  name                 String
+  email                String        @unique
+  password             String?
+  accept_send_location Boolean       @default(false)
+  birthdate            DateTime?
+  genre                Genre?
+  postalcode           String?
+  address              String?
+  address_number       String?
+  address_complement   String?
+  district             String?
+  city                 String?
+  state                String?
+  phone                String?
+  place_distance       Int?
+  place_rating         Decimal?
+  event_rating         Decimal?
+  login_provider       LoginProvider @default(LOCAL)
+
+  is_active        Boolean @default(true)
+  is_private_email Boolean @default(false)
+  apple_id         String? @unique
+
+  children Child[]
+
+  wish_list_places        UserPlaceWishlist[]
+  events                  UserEventWishlist[]
+  categories              Category[]
+  age_groups              AgeGroup[]
+  place_ratings           PlaceUserRating[]
+  event_ratings           EventUserRating[]
+  place_suggetions        PlaceSuggestion[]
+  announcement_suggetions AnnouncementSuggetion[]
+
+  created_categories Category[] @relation(name: "created_user_category")
+  updated_categories Category[] @relation(name: "updated_user_category")
+
+  created_announcements Announcement[] @relation(name: "created_user_announcement")
+  updated_announcements Announcement[] @relation(name: "updated_user_announcement")
+
+  created_advertisers Advertiser[] @relation(name: "created_user_advertiser")
+  updated_advertisers Advertiser[] @relation(name: "updated_user_advertiser")
+
+  created_age_groups AgeGroup[] @relation(name: "created_user_age_group")
+  updated_age_groups AgeGroup[] @relation(name: "updated_user_age_group")
+
+  created_owners Owner[] @relation(name: "created_user_owner")
+  updated_owners Owner[] @relation(name: "updated_user_owner")
+
+  created_places Place[] @relation(name: "created_user_place")
+  updated_places Place[] @relation(name: "updated_user_place")
+
+  created_place_details PlaceDetail[] @relation(name: "created_user_place_detail")
+  updated_place_details PlaceDetail[] @relation(name: "updated_user_place_detail")
+
+  created_place_rating PlaceUserRating[] @relation(name: "created_user_place_rating")
+  updated_place_rating PlaceUserRating[] @relation(name: "updated_user_place_rating")
+
+  created_event_rating EventUserRating[] @relation(name: "created_user_event_rating")
+  updated_event_rating EventUserRating[] @relation(name: "updated_user_event_rating")
+
+  created_tags Tag[] @relation(name: "created_user_tags")
+  updated_tags Tag[] @relation(name: "updated_user_tags")
+
+  created_event Event[] @relation(name: "created_user_event")
+  updated_event Event[] @relation(name: "updated_user_event")
+
+  created_event_images      EventImage[] @relation(name: "created_user_event_image")
+  updated_user_event_images EventImage[] @relation(name: "updated_user_event_image")
+
+  created_event_schedules EventSchedule[] @relation(name: "created_user_event_schedule")
+  updated_event_schedule  EventSchedule[] @relation(name: "updated_user_event_schedule")
+
+  created_event_details EventDetail[] @relation(name: "created_user_event_detail")
+  updated_event_details EventDetail[] @relation(name: "updated_user_event_detail")
+
+  created_articles Article[] @relation(name: "created_user_article")
+  updated_articles Article[] @relation(name: "updated_user_article")
+
+  created_authors Author[] @relation(name: "created_user_author")
+  updated_authors Author[] @relation(name: "updated_user_author")
+
+  created_article_images ArticleImage[] @relation(name: "created_user_article_image")
+  updated_article_image  ArticleImage[] @relation(name: "updated_user_article_image")
+
+  created_place_suggetion PlaceSuggestion[] @relation(name: "created_user_place_suggetion")
+  updated_place_suggetion PlaceSuggestion[] @relation(name: "updated_user_place_suggetion")
+
+  created_place_images PlaceImage[] @relation(name: "created_user_place_image")
+  updated_place_images PlaceImage[] @relation(name: "updated_user_place_image")
+
+  created_place_campaigns PlaceCampaign[] @relation(name: "created_user_place_campaign")
+  updated_place_campaigns PlaceCampaign[] @relation(name: "updated_user_place_campaign")
+
+  created_password_recovery_tokens PasswordRecoveryToken[] @relation(name: "created_user_password_recovery_token")
+  updated_password_recovery_tokens PasswordRecoveryToken[] @relation(name: "updated_user_password_recovery_token")
+
+  created_announcement_suggetion AnnouncementSuggetion[] @relation(name: "created_user_announcement_suggetion")
+  updated_announcement_suggetion AnnouncementSuggetion[] @relation(name: "updated_user_announcement_suggetion")
+
+  created_application_logs ApplicationLogs[] @relation(name: "created_user_application_log")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("users")
+}
+
+model UserPlaceWishlist {
+  uuid      String @id @default(uuid())
+  user      User   @relation(fields: [user_uuid], references: [uuid])
+  user_uuid String
+
+  place      Place  @relation(fields: [place_uuid], references: [uuid])
+  place_uuid String
+
+  is_active Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("users_places_wishlists")
+}
+
+model UserEventWishlist {
+  uuid String @id @default(uuid())
+
+  user      User   @relation(fields: [user_uuid], references: [uuid])
+  user_uuid String
+
+  event      Event  @relation(fields: [event_uuid], references: [uuid])
+  event_uuid String
+
+  is_active Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("user_event_wishlists")
+}
+
+model Child {
+  uuid      String   @id @default(uuid())
+  name      String
+  birthdate DateTime
+  kinship   Kinship
+
+  user      User   @relation(fields: [user_uuid], references: [uuid])
+  user_uuid String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("children")
+}
+
+enum Kinship {
+  son
+  daughter
+  grandson
+  granddaughter
+  nephew
+  niece
+  godson
+  goddaughter
+  stepson
+  stepdaughter
+  other
+}
+
+enum IconFamilies {
+  Feather
+  Octicons
+  MaterialIcons
+  MaterialCommunityIcons
+  FontAwesome
+  FontAwesome5
+  FontAwesome5Brands
+  Fontisto
+  Foundation
+  Ionicons
+  AntDesign
+  Entypo
+  EvilIcons
+  SimpleLineIcons
+  Zocial
+}
+
+model Category {
+  uuid        String        @id @default(uuid())
+  description String
+  icon_name   String?
+  icon_family IconFamilies?
+
+  parent_uuid String?
+  parent      Category?  @relation("categories_relationship", fields: [parent_uuid], references: [uuid])
+  children    Category[] @relation("categories_relationship")
+
+  users  User[]
+  places Place[]
+  events Event[]
+
+  created_user      User     @relation(name: "created_user_category", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_category", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("categories")
+}
+
+model Announcement {
+  uuid       String    @id @default(uuid())
+  image_url  String
+  action_url String
+  start_date DateTime  @default(now())
+  end_date   DateTime?
+  is_active  Boolean   @default(true)
+
+  priority             Int
+  seconds_display_time Int
+
+  advertiser      Advertiser @relation(fields: [advertiser_uuid], references: [uuid])
+  advertiser_uuid String
+
+  created_user      User     @relation(name: "created_user_announcement", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User              @relation(name: "updated_user_announcement", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime          @default(now())
+  ApplicationLogs   ApplicationLogs[]
+
+  @@map("announcements")
+}
+
+enum PersonType {
+  fisica
+  juridica
+}
+
+model Advertiser {
+  uuid               String     @id @default(uuid())
+  name               String
+  person_type        PersonType
+  cpfcnpj            String
+  postal_code        String
+  address            String
+  address_number     String
+  address_complement String
+  district           String
+  city               String
+  state              String
+  phone              String
+
+  url String
+
+  is_active Boolean @default(true)
+
+  announcements Announcement[]
+
+  created_user      User     @relation(name: "created_user_advertiser", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_advertiser", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("advertisers")
+}
+
+model AgeGroup {
+  uuid        String  @id @default(uuid())
+  description String
+  start_age   Int
+  end_age     Int
+  is_active   Boolean @default(true)
+
+  users  User[]
+  events Event[]
+  places Place[]
+
+  created_user      User     @relation(name: "created_user_age_group", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_age_group", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("age_groups")
+}
+
+model Owner {
+  uuid               String     @id @default(uuid())
+  name               String
+  person_type        PersonType?
+  cpfcnpj            String?
+  email              String?
+  postalcode         String?
+  address            String?
+  address_number     String?
+  address_complement String?
+  district           String?
+  city               String?
+  state              String?
+  phone              String?
+  url                String?
+  is_active          Boolean    @default(true)
+
+  places Place[]
+  events Event[]
+
+  created_user      User     @relation(name: "created_user_owner", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_owner", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("owners")
+}
+
+model Place {
+  uuid                      String  @id @default(uuid())
+  name                      String
+  slogan                    String?
+  description               String
+  localization_description  String
+  opening_hours_description String
+  cost_description          String
+  cpfcnpj                   String?
+  corporate_name            String?
+  person_type               PersonType?
+
+  instagram_deep_link    String?
+  whatsapp_url_deep_link String?
+
+  parental_recomendations String?
+  url_place               String?
+  url_shop                String?
+
+  is_free           Boolean @default(false)
+  has_wifi          Boolean @default(false)
+  has_parking       Boolean @default(false)
+  has_accessibility Boolean @default(false)
+  is_pet_friendly   Boolean @default(false)
+  has_kid_caregiver Boolean @default(false)
+
+  is_active Boolean @default(true)
+
+  rate Decimal?
+
+  owner      Owner  @relation(fields: [owner_uuid], references: [uuid])
+  owner_uuid String
+
+  events Event[]
+
+  place_tags          Tag[]
+  place_images        PlaceImage[]
+  place_campaigns     PlaceCampaign[]
+  place_categories    Category[]
+  place_age_groups    AgeGroup[]
+  place_details       PlaceDetail[]
+  place_users_ratings PlaceUserRating[]
+
+  users_on_wish_list UserPlaceWishlist[]
+
+  location    Unsupported("geometry(Point, 4326)")?
+
+  @@index([location], name: "place_location_idx", type: Gist)
+
+  created_user      User     @relation(name: "created_user_place", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User              @relation(name: "updated_user_place", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime          @default(now())
+  ApplicationLogs   ApplicationLogs[]
+
+  @@map("places")
+}
+
+model PlaceDetail {
+  uuid        String @id @default(uuid())
+  name        String
+  description String
+  priority    Int
+
+  is_active Boolean @default(true)
+
+  place      Place  @relation(fields: [place_uuid], references: [uuid])
+  place_uuid String
+
+  created_user      User     @relation(name: "created_user_place_detail", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_place_detail", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("place_details")
+}
+
+model Tag {
+  uuid        String @id @default(uuid())
+  description String
+  priority    Int
+
+  is_active Boolean @default(true)
+
+  places Place[]
+  events Event[]
+  authors Author[]
+
+  created_user      User     @relation(name: "created_user_tags", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_tags", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("tags")
+}
+
+model PlaceUserRating {
+  uuid        String  @default(uuid())
+  rating      Int
+  description String?
+
+  is_active Boolean @default(true)
+
+  user       User   @relation(fields: [user_uuid], references: [uuid])
+  place      Place  @relation(fields: [place_uuid], references: [uuid])
+  user_uuid  String
+  place_uuid String
+
+  created_user      User     @relation(name: "created_user_place_rating", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_place_rating", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@id([uuid, user_uuid, place_uuid])
+  @@map("place_users_ratings")
+}
+
+model EventUserRating {
+  uuid        String  @default(uuid())
+  rating      Int
+  description String?
+
+  is_active Boolean @default(true)
+
+  user       User   @relation(fields: [user_uuid], references: [uuid])
+  event      Event  @relation(fields: [event_uuid], references: [uuid])
+  user_uuid  String
+  event_uuid String
+
+  created_user      User     @relation(name: "created_user_event_rating", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_event_rating", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@id([uuid, user_uuid, event_uuid])
+  @@map("event_users_ratings")
+}
+
+model Event {
+  uuid                     String  @id @default(uuid())
+  name                     String
+  duration                 Int
+  description              String
+  cost_description         String
+  localization_description String
+  parental_recomendations  String?
+  url_shop                 String?
+  url_place                String?
+
+  is_free           Boolean @default(false)
+  has_wifi          Boolean @default(false)
+  has_parking       Boolean @default(false)
+  has_accessibility Boolean @default(false)
+  is_pet_friendly   Boolean @default(false)
+  has_kid_caregiver Boolean @default(false)
+
+  place      Place?  @relation(fields: [place_uuid], references: [uuid])
+  place_uuid String?
+
+  rate Decimal?
+
+  owner      Owner?  @relation(fields: [owner_uuid], references: [uuid])
+  owner_uuid String?
+
+  schedules     EventSchedule[]
+  event_images  EventImage[]
+  event_details EventDetail[]
+
+  event_tags          Tag[]
+  users_on_wish_list  UserEventWishlist[]
+  event_categories    Category[]
+  event_age_groups    AgeGroup[]
+  event_users_ratings EventUserRating[]
+
+  location    Unsupported("geometry(Point, 4326)")?
+
+  @@index([location], name: "event_location_idx", type: Gist)
+
+  created_user      User     @relation(name: "created_user_event", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User              @relation(name: "updated_user_event", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime          @default(now())
+  ApplicationLogs   ApplicationLogs[]
+
+  @@map("events")
+}
+
+model EventSchedule {
+  uuid String   @id @default(uuid())
+  date DateTime
+
+  event      Event  @relation(fields: [event_uuid], references: [uuid])
+  event_uuid String
+
+  created_user      User     @relation(name: "created_user_event_schedule", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_event_schedule", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@unique([date, event_uuid])
+  @@map("event_schedules")
+}
+
+model EventImage {
+  uuid String @id @default(uuid())
+  url  String @unique
+
+  event      Event  @relation(fields: [event_uuid], references: [uuid])
+  event_uuid String
+
+  created_user      User     @relation(name: "created_user_event_image", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_event_image", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("event_images")
+}
+
+model EventDetail {
+  uuid        String @id @default(uuid())
+  name        String
+  description String
+  priority    Int
+
+  is_active Boolean @default(true)
+
+  event      Event  @relation(fields: [event_uuid], references: [uuid])
+  event_uuid String
+
+  created_user      User     @relation(name: "created_user_event_detail", fields: [created_user_uuid], references: [uuid])
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_event_detail", fields: [updated_user_uuid], references: [uuid])
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("event_details")
+}
+
+model Article {
+  uuid             String   @id @default(uuid())
+  url              String?
+  video_url        String?
+  title            String
+  text             String
+  publishment_date DateTime @default(now())
+
+  author      Author @relation(fields: [author_uuid], references: [uuid])
+  author_uuid String
+
+  images ArticleImage[]
+
+  application_logs ApplicationLogs[]
+
+  created_user      User     @relation(name: "created_user_article", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_article", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("articles")
+}
+
+model ArticleImage {
+  uuid     String @id @default(uuid())
+  url      String @unique
+  priority Int
+
+  article      Article @relation(fields: [article_uuid], references: [uuid])
+  article_uuid String
+
+  created_user      User     @relation(name: "created_user_article_image", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_article_image", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("article_images")
+}
+
+model Author {
+  uuid        String  @id @default(uuid())
+  email       String  @unique
+  name        String
+  phone       String
+  image_url   String
+  is_active   Boolean @default(true)
+  description String
+  theme       String
+  priority    Int?
+
+  website_url         String?
+  instagram_deep_link String?
+
+  articles Article[]
+  author_tags Tag[]
+
+  created_user      User     @relation(name: "created_user_author", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_author", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("authors")
+}
+
+model PlaceSuggestion {
+  uuid        String  @id @default(uuid())
+  user        User?   @relation(fields: [user_uuid], references: [uuid])
+  user_uuid   String?
+  name        String
+  phone       String
+  observation String
+
+  visualized Boolean @default(false)
+
+  created_user      User     @relation(name: "created_user_place_suggetion", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_place_suggetion", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("place_suggetions")
+}
+
+model AnnouncementSuggetion {
+  uuid                String  @id @default(uuid())
+  user                User?   @relation(fields: [user_uuid], references: [uuid])
+  user_uuid           String?
+  name                String
+  company_responsible String
+  message             String
+  phone               String
+
+  visualized Boolean @default(false)
+
+  created_user      User     @relation(name: "created_user_announcement_suggetion", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_announcement_suggetion", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("announcement_suggetions")
+}
+
+model PlaceImage {
+  uuid       String @id @default(uuid())
+  url        String
+  priority   Int
+  place      Place  @relation(fields: [place_uuid], references: [uuid])
+  place_uuid String
+
+  created_user      User     @relation(name: "created_user_place_image", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_place_image", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("place_images")
+}
+
+model PlaceCampaign {
+  uuid             String @id @default(uuid())
+  investment       Float
+  daily_investment Float
+  start_date       DateTime
+  end_date         DateTime
+  is_active        Boolean @default(true)
+
+  place      Place  @relation(fields: [place_uuid], references: [uuid])
+  place_uuid String
+
+  created_user      User     @relation(name: "created_user_place_campaign", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_place_campaign", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("place_campaigns")
+}
+
+model PasswordRecoveryToken {
+  uuid           String  @id @default(uuid())
+  recovery_token String
+  is_verified    Boolean @default(false)
+
+  created_user      User     @relation(name: "created_user_password_recovery_token", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  updated_user      User     @relation(name: "updated_user_password_recovery_token", fields: [updated_user_uuid], references: [uuid], onDelete: Cascade)
+  updated_user_uuid String
+  updated_at        DateTime @default(now())
+
+  @@map("password_recovery_tokens")
+}
+
+enum LogType {
+  navigation
+  event
+  place
+  article
+  search
+  location
+  announcement
+}
+
+model ApplicationLogs {
+  uuid         String    @id @default(uuid())
+  initial_date DateTime?
+  final_date   DateTime?
+  type         LogType
+
+  event      Event?  @relation(fields: [event_uuid], references: [uuid])
+  event_uuid String?
+
+  place      Place?  @relation(fields: [place_uuid], references: [uuid])
+  place_uuid String?
+
+  article      Article? @relation(fields: [article_uuid], references: [uuid])
+  article_uuid String?
+
+  annoucement      Announcement? @relation(fields: [annoucement_uuid], references: [uuid])
+  annoucement_uuid String?
+
+  search_text String?
+
+  location    Unsupported("geometry(Point, 4326)")?
+
+  @@index([location], name: "log_location_idx", type: Gist)
+
+  created_user      User     @relation(name: "created_user_application_log", fields: [created_user_uuid], references: [uuid], onDelete: Cascade)
+  created_user_uuid String
+  created_at        DateTime @default(now())
+
+  @@map("application_logs")
+}
+
+model VersionUpdateControl {
+  uuid          String    @id @default(uuid())
+  version       String
+  is_mandatory  Boolean
+  release_date  DateTime?
+
+  @@map("version_update_control")
+}
+
+// model AnnouncmentsImage {
+//   url
+//   priority
+//   provider
+//   duration
+
+//   @@map("announcments_image")
+// }
